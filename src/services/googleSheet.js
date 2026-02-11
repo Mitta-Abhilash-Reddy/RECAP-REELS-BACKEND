@@ -22,7 +22,10 @@ async function appendLead(data) {
   const sheets = google.sheets({ version: "v4", auth: authClient });
 
   const values = [[
-    new Date().toLocaleString(),
+    new Date().toLocaleString("en-IN", {
+  timeZone: "Asia/Kolkata"
+}),
+
     fullName,
     businessEmail,
     companyName,

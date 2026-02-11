@@ -1,15 +1,13 @@
 const { google } = require("googleapis");
-const path = require("path");
+
+const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT);
 
 const auth = new google.auth.GoogleAuth({
-  keyFile: path.join(__dirname, "../../google-service-account.json"),
+  credentials,
   scopes: ["https://www.googleapis.com/auth/spreadsheets"]
 });
 
-const sheets = google.sheets({ version: "v4", auth });
-
-// Prefer SPREADSHEET_ID from env for flexibility in different environments
-const SPREADSHEET_ID = process.env.SPREADSHEET_ID || "1cxJeaDM-Ql9LGwRx8vi0SDwnIxNlhMZoU08s3_s1GoA";
+const SPREADSHEET_ID = process.env.SPREADSHEET_ID;
 
 async function appendLead(data) {
   const {
@@ -19,6 +17,9 @@ async function appendLead(data) {
     phoneNumber,
     projectDetails
   } = data;
+
+  const authClient = await auth.getClient();
+  const sheets = google.sheets({ version: "v4", auth: authClient });
 
   const values = [[
     new Date().toLocaleString(),
@@ -37,13 +38,12 @@ async function appendLead(data) {
       requestBody: { values }
     });
 
-    console.log("Google Sheets append response:", res.status, res.statusText);
+    console.log("Google Sheets append success");
     return res;
   } catch (err) {
-    console.error("Failed to append to Google Sheet:", err && err.message ? err.message : err);
+    console.error("Failed to append to Google Sheet:", err.message);
     throw err;
   }
 }
 
 module.exports = appendLead;
-    

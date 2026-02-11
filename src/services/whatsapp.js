@@ -7,21 +7,21 @@ const client = twilio(
 );
 
 async function sendWhatsAppMessage(lead) {
-  const message = `
-📢 New Lead – Recap Reels
+  const message = `\n📢 New Lead – Recap Reels\n\nName: ${lead.fullName}\nEmail: ${lead.businessEmail}\nCompany: ${lead.companyName}\nPhone: ${lead.phoneNumber}\nRequirement: ${lead.projectDetails || "N/A"}\n`;
 
-Name: ${lead.fullName}
-Email: ${lead.businessEmail}
-Company: ${lead.companyName}
-Phone: ${lead.phoneNumber}
-Requirement: ${lead.projectDetails || "N/A"}
-`;
+  try {
+    const resp = await client.messages.create({
+      from: twilioConfig.from,
+      to: twilioConfig.to,
+      body: message
+    });
 
-  await client.messages.create({
-    from: twilioConfig.from,
-    to: twilioConfig.to,
-    body: message
-  });
+    console.log("Twilio message sent, sid:", resp.sid);
+    return resp;
+  } catch (err) {
+    console.error("Failed to send WhatsApp message via Twilio:", err && err.message ? err.message : err);
+    throw err;
+  }
 }
 
 module.exports = sendWhatsAppMessage;

@@ -15,7 +15,7 @@ router.post("/submit", validateLead, async (req, res) => {
     try {
       await sendWhatsAppMessage(req.body);
     } catch (whatsappError) {
-      console.error("WhatsApp failed:", whatsappError.message);
+      console.error("WhatsApp failed:", whatsappError);
     }
 
     // 3️⃣ Always return success if sheet saved
@@ -32,5 +32,6 @@ router.post("/submit", validateLead, async (req, res) => {
     });
   }
 });
+
 
 module.exports = router;
